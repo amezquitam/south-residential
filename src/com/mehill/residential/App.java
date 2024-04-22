@@ -1,6 +1,8 @@
 package com.mehill.residential;
 
 import java.util.List;
+import java.util.function.Supplier;
+
 import javax.swing.JOptionPane;
 import java.time.format.DateTimeParseException;
 import static java.time.LocalDate.parse;
@@ -36,10 +38,7 @@ public class App {
 
         loadDefaults();
 
-        Double percentageOfRentedApartments = rSystem.getPercentageOfRentedApartments();
-        Double percentageOfEmptyApartments = rSystem.getPercentageOfEmptyApartments();
-
-        String messageMenu = new StringBuilder()
+        Supplier<String> messageMenu = () -> new StringBuilder()
                 .append("========================================\n")
                 .append("        SELECCIONE LA ACCION A REALIZAR   \n")
                 .append("========================================\n")
@@ -48,12 +47,12 @@ public class App {
                 .append("3. Obtener apartamentos por dueño\n")
                 .append("4. Calcular dinero pagado en un mes especifico\n")
                 .append("5. Salir\n")
-                .append("Porcentaje de apartamentos alquilados: ").append(percentageOfRentedApartments).append("%\n")
-                .append("Porcentaje de apartamentos vacíos: ").append(percentageOfEmptyApartments).append("%\n")
+                .append("Porcentaje de apartamentos alquilados: ").append(rSystem.getPercentageOfRentedApartments()).append("%\n")
+                .append("Porcentaje de apartamentos vacíos: ").append(rSystem.getPercentageOfEmptyApartments()).append("%\n")
                 .toString();
 
         do {
-            String input = JOptionPane.showInputDialog(messageMenu).trim();
+            String input = JOptionPane.showInputDialog(messageMenu.get()).trim();
 
             if (input.equals("1"))
                 registApartmentWithOwnerMenu();
@@ -91,7 +90,7 @@ public class App {
             String owner = JOptionPane.showInputDialog("Ingrese el nombre del dueño");
             apartment.setOwner(new Owner(owner));
 
-            Integer status = JOptionPane.showOptionDialog(
+            Integer statusIndex = JOptionPane.showOptionDialog(
                     null,
                     "Seleccione el estado el apartamento",
                     "Estado del apartamento",
@@ -101,7 +100,7 @@ public class App {
                     ApartmentStatus.values(),
                     ApartmentStatus.HABITED);
 
-            apartment.setStatus(ApartmentStatus.values()[status]);
+            apartment.setStatus(ApartmentStatus.values()[statusIndex]);
 
             rSystem.registApartmentWithOwner(apartment);
 
